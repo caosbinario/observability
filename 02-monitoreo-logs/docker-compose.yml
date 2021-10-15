@@ -1,0 +1,40 @@
+version: "3.7"
+
+volumes:
+  grafana-data:
+  loki-data:
+
+services:
+  grafana:
+    image: grafana/grafana:8.0.6
+    container_name: grafana
+    restart: unless-stopped
+    volumes:
+    - grafana-data:/var/lib/grafana
+    ports:
+    - 3000:3000
+
+  loki:
+    image: grafana/loki:2.0.0
+    container_name: loki
+    restart: unless-stopped
+    volumes:
+    - ./loki-config.yml:/mnt/config/loki-config.yml
+    - loki-data:/loki
+    ports:
+    - 3100:3100
+    command: 
+    - '-config.file=/mnt/config/loki-config.yml'
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"  
+    ports:
+    - 80:80
+
+  
