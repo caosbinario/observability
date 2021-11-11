@@ -16,9 +16,6 @@ scrape_configs:
       - localhost
     labels:
       job: varlogs
-      entorno: ${entorno}
-      host: ${hostname}
-      server_ip: ${server_ip}
       __path__: /var/log/*log
       
 # Comandos usuarios
@@ -28,9 +25,6 @@ scrape_configs:
       - localhost
     labels:
       job: history
-      entorno: ${entorno}
-      host: ${hostname}
-      server_ip: ${server_ip}
       __path__: /home_server/*/.bash_history
 
 # Comandos Root
@@ -40,7 +34,4 @@ scrape_configs:
       - localhost
     labels:
       job: history
-      entorno: ${entorno}
-      host: ${hostname}
-      server_ip: ${server_ip}
       __path__: /root_user/.bash_history
