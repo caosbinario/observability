@@ -1,0 +1,76 @@
+version: "3.7"
+
+volumes:
+    prometheus-data:
+
+services:
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.2.2
+    container_name: slave_node_exporter
+    command:
+    - '--path.rootfs=/host'
+    restart: unless-stopped
+    env_file:
+    - .env
+    pid: host
+    expose:
+    - 9100
+    volumes:
+    - '/:/host:ro,rslave'
+    logging:
+      driver: loki
+      options:
+        loki-url: "${lokiURL}/loki/api/v1/push"  
+
+  prometheus:
+    image: prom/prometheus:v2.28.1
+    container_name: slave_prometheus
+    restart: unless-stopped
+    env_file:
+    - .env
+    ports:
+    - 9090:9090
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - prometheus-data:/prometheus
+    logging:
+      driver: loki
+      options:
+        loki-url: "${lokiURL}/loki/api/v1/push"  
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.38.6
+    container_name: slave_cAdvisor
+    restart: unless-stopped
+    env_file:
+    - .env
+    expose:
+    - 8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    logging:
+      driver: loki
+      options:
+        loki-url: "${lokiURL}/loki/api/v1/push"  
+
+  promtail:
+    image: grafana/promtail:2.3.0
+    container_name: slave_promtail
+    restart: unless-stopped
+    env_file:
+    - .env
+    volumes:
+    - /var/log/:/var/log/:ro
+    - /home/:/home_server:ro
+    - /root/:/root_user:ro
+    - ./promtail.yml:/etc/promtail/promtail.yml
+    - ./positions.yaml:/tmp/positions.yaml
+    command: -config.file=/etc/promtail/promtail.yml -config.expand-env=true # env vars
+    logging:
+      driver: loki
+      options:
+        loki-url: "${lokiURL}/loki/api/v1/push"  
+  

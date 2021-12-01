@@ -1,0 +1,49 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: ${lokiURL}/loki/api/v1/push
+
+scrape_configs:
+# Logs sistema
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: varlogs
+      pais: ${pais}
+      entorno: ${entorno}
+      cliente: ${cliente}
+      hostname: ${hostname}
+      __path__: /var/log/*log
+
+# Comandos usuarios
+- job_name: history
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: history
+      pais: ${pais}
+      entorno: ${entorno}
+      cliente: ${cliente}
+      hostname: ${hostname}
+      __path__: /home_server/*/.bash_history
+
+# Comandos Root
+- job_name: history_root
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: history
+      pais: ${pais}
+      entorno: ${entorno}
+      cliente: ${cliente}
+      hostname: ${hostname}
+      __path__: /root_user/.bash_history

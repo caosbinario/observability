@@ -1,0 +1,44 @@
+version: "3.3"
+
+volumes:
+  grafana-data:
+  prometheus-data:    
+  loki-data:
+
+services:
+  loki:
+    image: grafana/loki:2.0.0
+    container_name: master_loki
+    restart: unless-stopped
+    volumes:
+    - ./loki-config.yml:/mnt/config/loki-config.yml
+    - loki-data:/loki
+    ports:
+    - 3100:3100
+    command: 
+    - '-config.file=/mnt/config/loki-config.yml'
+
+  grafana:
+    image: grafana/grafana:8.0.6
+    container_name: master_grafana
+    restart: unless-stopped
+    volumes:
+    - grafana-data:/var/lib/grafana
+    ports:
+    - 3000:3000
+
+  prometheus:
+    image: prom/prometheus:v2.30.0
+    container_name: master_prometheus
+    restart: unless-stopped
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - prometheus-data:/prometheus
+    ports:
+    - 9090:9090
+    command:
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--storage.tsdb.path=/prometheus'
+    - '--storage.tsdb.retention.time=90d'
+    - '--storage.tsdb.retention.size=100GB'
+    - '--web.enable-lifecycle'
