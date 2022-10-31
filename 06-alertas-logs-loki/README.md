@@ -6,6 +6,7 @@ Levantamos grafana y loki:
 ```
 docker-compose up -d
 ```
+Por defecto, grafana va a levantarse en el puerto 3000 y genera el usuario y contraseña "admin" "admin"
 
 Luego vamos al archivo [server.py](server.py) y editamos la linea 39 con la URL del servidor de Loki.
 Y levantamos el servicio de python.
