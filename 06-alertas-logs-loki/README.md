@@ -17,7 +17,5 @@ python server.py
 Para tirar logs desde la app a loki, tienen que pegarle a la URL del servidor con el parametro "txt" y el valor del log.
 Ejemplo:
 http://localhost:8080?txt="app-log"
-http://localhost:8080?txt="inicio"
-http://localhost:8080?txt="fin"
 
 La aplicación es bastante básica, cuando le llega una petición genera un número random, del 1 al 3, y depende que número sea, escribe el log como INFO, WARNING o ERROR.
