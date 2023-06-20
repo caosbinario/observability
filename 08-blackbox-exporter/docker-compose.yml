@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    privileged: true
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+ 
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    privileged: true
+    volumes:
+      - ./blackbox.yml:/etc/blackbox_exporter/config.yml
+    ports:
+      - '9115:9115'
+  
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
